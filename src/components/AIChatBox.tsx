@@ -14,7 +14,7 @@ declare global {
   interface Window {
     puter: {
       ai: {
-        chat: (prompt: string) => Promise<string>;
+        chat: (prompt: string) => Promise<any>;
       };
     };
   }
@@ -38,7 +38,13 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
       const enhancedPrompt = `I'm looking for AI tools about: ${prompt}. Please provide details about the best tools in this category including their names, descriptions, websites, categories, and pricing if available. Format your answer as a clear list.`;
       
       const aiResponse = await window.puter.ai.chat(enhancedPrompt);
-      setResponse(aiResponse);
+      
+      // Handle the response properly - extract the text content
+      const responseText = typeof aiResponse === 'object' && aiResponse.message ? 
+        aiResponse.message.content : 
+        String(aiResponse);
+        
+      setResponse(responseText);
       
       // Here you could parse the AI response and extract structured tool data
       // if (onToolsReceived) {
