@@ -22,6 +22,10 @@ const ToolDetails = () => {
     enabled: !!tool?.category,
   });
 
+  const handleToolClick = (tool, relatedTools) => {
+    navigate(`/tool/${tool.id}`, { state: { tool, relatedTools } });
+  };
+
   if (isRelatedLoading) {
     return (
       <div className="container py-8 px-4 md:px-6">
@@ -52,12 +56,17 @@ const ToolDetails = () => {
   }
 
   // Filter out the current tool from related tools
-  const filteredRelatedTools = relatedToolsData?.filter(relatedTool => relatedTool.id !== tool.id) || [];
+  const filteredRelatedTools =
+    relatedToolsData?.filter((relatedTool) => relatedTool.id !== tool.id) || [];
 
   return (
     <div className="container py-8 px-4 md:px-6">
       <div className="max-w-5xl mx-auto">
-        <Button variant="ghost" className="mb-6 pl-0" onClick={() => navigate(-1)}>
+        <Button
+          variant="ghost"
+          className="mb-6 pl-0"
+          onClick={() => window.history.back()}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
@@ -65,27 +74,35 @@ const ToolDetails = () => {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
             <div className="rounded-lg overflow-hidden bg-secondary w-24 h-24 flex-shrink-0">
-              <img src={tool.logoUrl} alt={tool.name} className="w-full h-full object-cover" />
+              <img
+                src={tool.logoUrl}
+                alt={tool.name}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <h1 className="text-3xl font-display font-bold">{tool.name}</h1>
               <div className="text-muted-foreground">{tool.company}</div>
               <div className="flex flex-wrap gap-2 mt-2">
                 <Badge>
-                  {tool.category.charAt(0).toUpperCase() + tool.category.slice(1)}
+                  {tool.category.charAt(0).toUpperCase() +
+                    tool.category.slice(1)}
                 </Badge>
-                {tool.pricing && (
-                  tool?.pricing?.map((pricing) => {
-                    <Badge variant="secondary">{pricing}</Badge>
-                  })
-                )}
+                {tool?.tags &&
+                  Array.isArray(tool.tags) &&
+                  tool?.tags?.map((tag) => {
+                    <Badge variant="secondary">{tag}</Badge>;
+                  })}
                 {tool.origin && (
                   <Badge variant="outline">
                     <Link to={`/origin/${tool.origin}`}>{tool.origin}</Link>
                   </Badge>
                 )}
                 {tool.trending && (
-                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  <Badge
+                    variant="secondary"
+                    className="bg-primary/10 text-primary border-primary/20"
+                  >
                     Trending
                   </Badge>
                 )}
@@ -108,19 +125,15 @@ const ToolDetails = () => {
                 <ExternalLink className="ml-2 h-4 w-4" />
               </a>
             </Button>
-            <Button variant="secondary">
-              Share
-            </Button>
-            <Button variant="outline">
-              Report Issue
-            </Button>
+            <Button variant="secondary">Share</Button>
+            <Button variant="outline">Report Issue</Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <Card className="p-6">
               <h3 className="text-lg font-medium mb-3">Key Features</h3>
               <ul className="space-y-2">
-                {tool.key_features?.map((feature, index) => (
+                {tool?.features?.map((feature, index) => (
                   <li key={index} className="flex items-start">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -142,12 +155,14 @@ const ToolDetails = () => {
               </ul>
             </Card>
             <Card className="p-6">
-              <h3 className="text-lg font-medium mb-3">Additional Information</h3>
+              <h3 className="text-lg font-medium mb-3">
+                Additional Information
+              </h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Date Added</span>
                   <span>
-                    {new Date(tool.dateAdded).toLocaleDateString(undefined, {
+                    {new Date(tool.created).toLocaleDateString(undefined, {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -166,7 +181,21 @@ const ToolDetails = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Pricing</span>
-                  <span>{tool.pricing || "Not specified"}</span>
+                  <span>
+                    {tool?.pricing && Array.isArray(tool.pricing) ? (
+                      <ul>
+                        {tool.pricing.map((price, index) => (
+                          <li key={index}>
+                            {price.type.charAt(0).toUpperCase() +
+                              price.type.slice(1)}{" "}
+                            - {price.plan}: {price.cost}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      "Not specified"
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Origin</span>
@@ -177,12 +206,18 @@ const ToolDetails = () => {
           </div>
         </div>
 
-        {relatedTools.length > 0 && (
+        {relatedTools?.length > 0 && (
           <div>
-            <h2 className="text-2xl font-display font-bold mb-6">Similar Tools</h2>
+            <h2 className="text-2xl font-display font-bold mb-6">
+              Similar Tools
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedTools.slice(0, 3).map((relatedTool) => (
-                <ToolCard key={relatedTool.id} tool={relatedTool} onClick={() => handleToolClick(relatedTool, relatedTools)} />
+                <ToolCard
+                  key={relatedTool.id}
+                  tool={relatedTool}
+                  onClick={() => handleToolClick(relatedTool, relatedTools)}
+                />
               ))}
             </div>
           </div>

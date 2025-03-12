@@ -1,26 +1,160 @@
-
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCategories, fetchFeaturedTools, fetchTrendingTools } from '@/services/aiToolsService';
+import { fetchCategories } from '@/services/aiToolsService';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import ToolCard from '@/components/ToolCard';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AITool } from '@/services/aiToolsService';
+import { RefreshCw } from 'lucide-react';
 
 const Index = () => {
+  const [featuredTools, setFeaturedTools] = useState<AITool[]>([]);
+  const [trendingTools, setTrendingTools] = useState<AITool[]>([]);
+  const [isFeaturedLoading, setIsFeaturedLoading] = useState(true);
+  const [isTrendingLoading, setIsTrendingLoading] = useState(true);
+  const navigate = useNavigate();
+
   const { data: categories, isLoading: isCategoriesLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories
   });
 
-  const { data: featuredTools, isLoading: isFeaturedLoading } = useQuery({
-    queryKey: ['featuredTools'],
-    queryFn: fetchFeaturedTools
-  });
+  const fetchToolsFromAI = async (type: 'featured' | 'trending') => {
+    setIsLoading(true);
+    try {
+      let prompt = '';
+      if (type === 'featured') {
+        prompt = `Research and list the top 3 featured AI tools currently available. Please ensure your response spans a diverse range of categories such as coding assistants, design tools, automation, productivity, and data analytics. For each tool, gather and include comprehensive details including:
+  - Primary use case and target audience.
+  - Key features and standout functionalities.
+  - Additional information such as pricing, company, origin, and tags when available.
+  - The current trend status, and whether the tool is featured.
 
-  const { data: trendingTools, isLoading: isTrendingLoading } = useQuery({
-    queryKey: ['trendingTools'],
-    queryFn: fetchTrendingTools
-  });
+  Return your answer strictly as a JSON array or JSON where each element is an object conforming to the following TypeScript interface:
+
+  export interface AITool {
+    id: string;                     // Unique identifier for the tool.
+    name: string;                   // Name of the tool.
+    description: string;            // A concise bio summarizing its primary use case, key features, target audience, and unique selling points.
+    category: string;               // Main category (e.g., Coding, Design, Automation, Productivity, Data Analytics etc...).
+    subcategory?: string;           // (Optional) More specific category if applicable.
+    url: string;                    // Official website or landing page URL.
+    logoUrl: string;                // URL to the tool's logo image.
+    pricing?: array;                // Pricing details provided as a JSON Array and it contains type should be free or premium, plan and cost are the keys.
+    company?: string;               // (Optional) Name of the company behind the tool.
+    origin?: string;                // (Optional) Country or region of origin.
+    trending?: boolean;             // (Optional) Indicates if the tool is currently trending.
+    featured?: boolean;             // (Optional) Indicates if the tool is featured.
+    tags?: string[];                // (Optional) A list of tags relevant to the tool.
+    features: string[];             // A List of key features about the tool
+    created: string;
+    updated: string;
+  }
+
+  Ensure that:
+  1. Each tool's object includes all the fields listed above. If certain details are not available, provide an appropriate null or empty value.
+  2. The "description" field succinctly summarizes the tool's capabilities, primary use case, and its target market.
+  3. The final output is strictly well-formatted, valid JSON with no extra commentary or markdown formatting.`;
+      } else {
+        prompt = `Research and list the top 4 trending AI tools currently available. Please ensure your response spans a diverse range of categories such as coding assistants, design tools, automation, productivity, and data analytics. For each tool, gather and include comprehensive details including:
+  - Primary use case and target audience.
+  - Key features and standout functionalities.
+  - Additional information such as pricing, company, origin, and tags when available.
+  - The current trend status, and whether the tool is featured.
+
+  Return your answer strictly as a JSON array or JSON where each element is an object conforming to the following TypeScript interface:
+
+  export interface AITool {
+    id: string;                     // Unique identifier for the tool.
+    name: string;                   // Name of the tool.
+    description: string;            // A concise bio summarizing its primary use case, key features, target audience, and unique selling points.
+    category: string;               // Main category (e.g., Coding, Design, Automation, Productivity, Data Analytics etc...).
+    subcategory?: string;           // (Optional) More specific category if applicable.
+    url: string;                    // Official website or landing page URL.
+    logoUrl: string;                // URL to the tool's logo image.
+    pricing?: array;                // Pricing details provided as a JSON Array and it contains type should be free or premium, plan and cost are the keys.
+    company?: string;               // (Optional) Name of the company behind the tool.
+    origin?: string;                // (Optional) Country or region of origin.
+    trending?: boolean;             // (Optional) Indicates if the tool is currently trending.
+    featured?: boolean;             // (Optional) Indicates if the tool is featured.
+    tags?: string[];                // (Optional) A list of tags relevant to the tool.
+    features: string[];             // A List of key features about the tool
+    created: string;
+    updated: string;
+  }
+
+  Ensure that:
+  1. Each tool's object includes all the fields listed above. If certain details are not available, provide an appropriate null or empty value.
+  2. The "description" field succinctly summarizes the tool's capabilities, primary use case, and its target market.
+  3. The final output is strictly well-formatted, valid JSON with no extra commentary or markdown formatting.`;
+      }
+
+      const aiResponse = await window.puter.ai.chat(prompt);
+      const responseText = typeof aiResponse === "object" && aiResponse.message
+        ? aiResponse.message.content
+        : String(aiResponse);
+      const toolsData = eval(responseText);
+      if (type === 'featured') {
+        setFeaturedTools(toolsData);
+        localStorage.setItem("featuredTools", JSON.stringify(toolsData));
+        localStorage.setItem("featuredToolsTimestamp", Date.now().toString());
+        setIsFeaturedLoading(false);
+      } else {
+        setTrendingTools(toolsData);
+        localStorage.setItem("trendingTools", JSON.stringify(toolsData));
+        localStorage.setItem("trendingToolsTimestamp", Date.now().toString());
+        setIsTrendingLoading(false);
+      }
+    } catch (error) {
+      console.error(`Failed to fetch ${type} tools from AI:`, error);
+      setIsLoading(false);
+      if (type === 'featured') {
+        setIsFeaturedLoading(false);
+      } else {
+        setIsTrendingLoading(false);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadTools = (type: 'featured' | 'trending') => {
+      const storedTools = localStorage.getItem(`${type}Tools`);
+      const storedTimestamp = localStorage.getItem(`${type}ToolsTimestamp`);
+      const fiveHours = 5 * 60 * 60 * 1000;
+
+      if (storedTools && storedTimestamp && Date.now() - parseInt(storedTimestamp) < fiveHours) {
+        const parsedTools = JSON.parse(storedTools);
+        if (type === 'featured') {
+          setFeaturedTools(parsedTools);
+          setIsFeaturedLoading(false);
+        } else {
+          setTrendingTools(parsedTools);
+          setIsTrendingLoading(false);
+        }
+      } else {
+        fetchToolsFromAI(type);
+      }
+    };
+
+    loadTools('featured');
+    loadTools('trending');
+  }, []);
+
+  const handleToolClick = (tool: AITool, relatedTools: AITool[] = []) => {
+    navigate(`/tool/${tool.id}`, { state: { tool, relatedTools } });
+  };
+
+  const handleReload = (type: 'featured' | 'trending') => {
+    fetchToolsFromAI(type);
+  };
+
+  const setIsLoading = (value: boolean) => {
+    setIsFeaturedLoading(value);
+    setIsTrendingLoading(value);
+  };
 
   return (
     <div className="container py-8 px-4 md:px-6">
@@ -47,9 +181,15 @@ const Index = () => {
         <section className="mb-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-display font-bold">Featured Tools</h2>
-            <Button variant="ghost" asChild>
-              <Link to="/">View All</Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" asChild>
+                <Link to="/">View All</Link>
+              </Button>
+              <Button variant="outline" onClick={() => handleReload('featured')}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Reload
+              </Button>
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {isFeaturedLoading ? (
@@ -65,7 +205,7 @@ const Index = () => {
               ))
             ) : (
               featuredTools.map(tool => (
-                <ToolCard key={tool.id} tool={tool} featured />
+                <ToolCard key={tool.id} tool={tool} featured onClick={(t) => handleToolClick(t, featuredTools)}/>
               ))
             )}
           </div>
@@ -76,9 +216,15 @@ const Index = () => {
       <section className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-display font-bold">Trending Tools</h2>
-          <Button variant="ghost" asChild>
-            <Link to="/trending">View All</Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" asChild>
+              <Link to="/trending">View All</Link>
+            </Button>
+            <Button variant="outline" onClick={() => handleReload('trending')}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Reload
+            </Button>
+          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isTrendingLoading ? (
@@ -93,8 +239,8 @@ const Index = () => {
               </div>
             ))
           ) : (
-            trendingTools?.slice(0, 4).map(tool => (
-              <ToolCard key={tool.id} tool={tool} />
+            trendingTools?.map(tool => (
+              <ToolCard key={tool.id} tool={tool} onClick={(t) => handleToolClick(t, trendingTools)}/>
             ))
           )}
         </div>
@@ -110,8 +256,8 @@ const Index = () => {
             ))
           ) : (
             categories?.map(category => (
-              <Link 
-                key={category.id} 
+              <Link
+                key={category.id}
                 to={`/category/${category.id}`}
                 className="group relative overflow-hidden rounded-lg card-hover border bg-card"
               >

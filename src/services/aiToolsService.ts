@@ -16,7 +16,7 @@ export interface AITool {
   trending?: boolean;
   featured?: boolean;
   tags?: string[];
-  dateAdded: string;
+  created: string;
   updated: string;
 }
 
