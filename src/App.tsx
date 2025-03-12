@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +13,7 @@ import NewToolsPage from "./pages/NewToolsPage";
 import SearchPage from "./pages/SearchPage";
 import OriginPage from "./pages/OriginPage";
 import NotFound from "./pages/NotFound";
+import AIChatBox from './components/AIChatBox';
 
 const queryClient = new QueryClient();
 

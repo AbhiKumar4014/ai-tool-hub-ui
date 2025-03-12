@@ -1,6 +1,5 @@
-
 import { useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchToolById, fetchToolsByCategory } from "@/services/aiToolsService";
 import { Button } from "@/components/ui/button";
@@ -11,28 +10,19 @@ import ToolCard from "@/components/ToolCard";
 import { ExternalLink, ArrowLeft } from "lucide-react";
 
 const ToolDetails = () => {
+  const location = useLocation();
+  const { tool, relatedTools } = location.state;
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: tool, isLoading, isError } = useQuery({
-    queryKey: ["tool", id],
-    queryFn: () => fetchToolById(id || ""),
-    enabled: !!id,
-  });
-
-  const { data: relatedTools, isLoading: isRelatedLoading } = useQuery({
+  const { data: relatedToolsData, isLoading: isRelatedLoading } = useQuery({
     queryKey: ["relatedTools", tool?.category],
     queryFn: () => fetchToolsByCategory(tool?.category || ""),
     enabled: !!tool?.category,
   });
 
-  useEffect(() => {
-    if (isError) {
-      navigate("/not-found", { replace: true });
-    }
-  }, [isError, navigate]);
-
-  if (isLoading) {
+  if (isRelatedLoading) {
     return (
       <div className="container py-8 px-4 md:px-6">
         <div className="max-w-5xl mx-auto">
@@ -61,12 +51,8 @@ const ToolDetails = () => {
     );
   }
 
-  if (!tool) {
-    return null;
-  }
-
   // Filter out the current tool from related tools
-  const filteredRelatedTools = relatedTools?.filter(relatedTool => relatedTool.id !== tool.id) || [];
+  const filteredRelatedTools = relatedToolsData?.filter(relatedTool => relatedTool.id !== tool.id) || [];
 
   return (
     <div className="container py-8 px-4 md:px-6">
@@ -89,7 +75,9 @@ const ToolDetails = () => {
                   {tool.category.charAt(0).toUpperCase() + tool.category.slice(1)}
                 </Badge>
                 {tool.pricing && (
-                  <Badge variant="secondary">{tool.pricing}</Badge>
+                  tool?.pricing?.map((pricing) => {
+                    <Badge variant="secondary">{pricing}</Badge>
+                  })
                 )}
                 {tool.origin && (
                   <Badge variant="outline">
@@ -107,15 +95,15 @@ const ToolDetails = () => {
 
           <div className="prose dark:prose-invert max-w-none mb-6">
             <p className="text-lg">{tool.description}</p>
-            <p>
+            {/* <p>
               This is an expanded description of the tool with more details about its features, functionality, and benefits.
               In a real implementation, this would come from your database or API.
-            </p>
+            </p> */}
           </div>
 
           <div className="flex flex-wrap gap-3 mb-8">
             <Button asChild>
-              <a href={tool.url} target="_blank" rel="noopener noreferrer">
+              <a href={tool?.url} target="_blank" rel="noopener noreferrer">
                 Visit Website
                 <ExternalLink className="ml-2 h-4 w-4" />
               </a>
@@ -132,57 +120,25 @@ const ToolDetails = () => {
             <Card className="p-6">
               <h3 className="text-lg font-medium mb-3">Key Features</h3>
               <ul className="space-y-2">
-                <li className="flex items-start">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-2 h-4 w-4 text-primary mt-1"
-                  >
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                  Feature 1: Description of the first main feature
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-2 h-4 w-4 text-primary mt-1"
-                  >
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                  Feature 2: Description of the second main feature
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-2 h-4 w-4 text-primary mt-1"
-                  >
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                  Feature 3: Description of the third main feature
-                </li>
+                {tool.key_features?.map((feature, index) => (
+                  <li key={index} className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary mt-1"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {feature}
+                  </li>
+                ))}
               </ul>
             </Card>
             <Card className="p-6">
@@ -221,28 +177,13 @@ const ToolDetails = () => {
           </div>
         </div>
 
-        {filteredRelatedTools.length > 0 && (
+        {relatedTools.length > 0 && (
           <div>
             <h2 className="text-2xl font-display font-bold mb-6">Similar Tools</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {isRelatedLoading
-                ? Array(3)
-                    .fill(0)
-                    .map((_, index) => (
-                      <div key={index} className="space-y-3">
-                        <Skeleton className="h-[200px] w-full" />
-                        <div className="space-y-2">
-                          <Skeleton className="h-5 w-3/4" />
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                        </div>
-                      </div>
-                    ))
-                : filteredRelatedTools
-                    .slice(0, 3)
-                    .map((relatedTool) => (
-                      <ToolCard key={relatedTool.id} tool={relatedTool} />
-                    ))}
+              {relatedTools.slice(0, 3).map((relatedTool) => (
+                <ToolCard key={relatedTool.id} tool={relatedTool} onClick={() => handleToolClick(relatedTool, relatedTools)} />
+              ))}
             </div>
           </div>
         )}

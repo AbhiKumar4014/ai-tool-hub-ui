@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Search, Send } from "lucide-react";
 import ToolCard from "@/components/ToolCard";
 import { AITool } from "@/services/aiToolsService";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from 'react-router-dom';
 
 interface AIChatBoxProps {
   onToolsReceived?: (toolsData: any) => void;
@@ -29,9 +29,29 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [parsedTools, setParsedTools] = useState<AITool[]>([]);
   const [activeTab, setActiveTab] = useState("text");
+  const navigate = useNavigate();
   
   const parseToolsFromResponse = (text: string): AITool[] => {
     try {
+      console.log(text);
+      if (text.includes("```json")) {
+        // Extract the JSON part
+        const jsonPart = text.split("```json")[1].split("```")[0].trim();
+        try {
+          const parsedData = JSON.parse(jsonPart);
+          console.log(parsedData)
+          if (Array.isArray(parsedData)) {
+            return parsedData as AITool[];
+          } else {
+            return [parsedData];
+          }
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+        // if (Array.isArray(parsedData)) {
+        //   return parsedData as AITool[];
+        // }
+      }
       // Basic parsing logic - look for numbered or bulleted lists
       const lines = text.split('\n');
       const tools: AITool[] = [];
@@ -133,7 +153,7 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
     if (match && match[1]) {
       const toolName = match[1].trim();
       return `Please provide comprehensive details about the AI tool called "${toolName}". 
-Include the following information in a structured format:
+Include the following information in a structured json format keys in snakecase and add a id:
 1. Name: Full name of the tool
 2. Description: A detailed description of what the tool does
 3. Website URL: The official website link
@@ -142,21 +162,29 @@ Include the following information in a structured format:
 6. Company: Which company developed this tool
 7. Key features: What makes this tool stand out
 8. Use cases: Common applications of this tool
+9. Trending: boolean variable
+10. Featured: boolean variable
 
 Format your answer in a clean, structured way with clear headings for each section.`;
     } else if (userPrompt.toLowerCase().includes("trending") || 
                userPrompt.toLowerCase().includes("popular") ||
                userPrompt.toLowerCase().includes("top") ||
+               userPrompt.toLowerCase().includes("list") ||
                userPrompt.toLowerCase().includes("best")) {
       return `List the top trending AI tools right now. For each tool, include:
+Include the following information in a structured json array format keys in snakecase and add a id that should be unique and:
 1. Name: Full name of the tool
-2. Description: Brief explanation of what it does
-3. Website URL: The official website
-4. Category: Type of AI tool
-5. Pricing: Free, freemium, paid, or subscription details
-6. Company: The creator company
+2. Description: A detailed description of what the tool does
+3. Website URL: The official website link
+4. Category: What type of AI tool is it (e.g. text generation, image generation, coding)
+5. Pricing: Free, freemium, paid, or subscription details that should be array
+6. Company: Which company developed this tool
+7. Key features: What makes this tool stand out
+8. Use cases: Common applications of this tool
+9. Trending: boolean variable
+10. Featured: boolean variable
 
-Format your answer as a numbered list with a clear separation between tools.`;
+Format your answer in a clean, structured way with clear headings for each section.`;
     } else {
       return `I'm looking for AI tools about: ${userPrompt}. Please provide details about the best tools in this category including:
 1. Name: Full name of each tool
@@ -213,6 +241,9 @@ Format your answer as a numbered list with clear sections for each tool.`;
       setIsLoading(false);
     }
   };
+  const handleToolClick = (tool: AITool, relatedTools: AITool[] = []) => {
+    navigate(`/tool/${tool.id}`, { state: { tool, relatedTools } });
+  };
   
   return (
     <Card className="w-full">
@@ -256,9 +287,14 @@ Format your answer as a numbered list with clear sections for each tool.`;
             </TabsContent>
             <TabsContent value="cards">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                {parsedTools.map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} />
+                {Array.isArray(parsedTools) && parsedTools.map((tool) => (
+                  <ToolCard key={tool.id} tool={tool} onClick={(t) => handleToolClick(t)} />
                 ))}
+                {Array.isArray(parsedTools) && parsedTools.length === 0 && (
+                  <div className="text-center text-muted-foreground py-8">
+                    No tools found. Try asking about a specific tool or category.
+                  </div>
+                )}
               </div>
             </TabsContent>
           </Tabs>
