@@ -49,11 +49,12 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
               id: `ai-tool-${tools.length + 1}`,
               name: currentTool.name,
               description: currentTool.description || "No description available",
-              websiteUrl: currentTool.websiteUrl || "#",
+              url: currentTool.url || "#",
               logoUrl: "/placeholder.svg", // Use placeholder for AI-generated entries
               category: currentTool.category || "general",
               pricing: currentTool.pricing || "Unknown",
               dateAdded: new Date().toISOString(),
+              updated: new Date().toISOString(),
               company: currentTool.company || "AI Recommended",
               trending: true
             } as AITool);
@@ -83,7 +84,7 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
           if (lowerLine.includes('description:') || lowerLine.startsWith('description')) {
             currentTool.description = line.split(':').slice(1).join(':').trim();
           } else if (lowerLine.includes('website:') || lowerLine.includes('url:') || lowerLine.includes('link:')) {
-            currentTool.websiteUrl = line.split(':').slice(1).join(':').trim();
+            currentTool.url = line.split(':').slice(1).join(':').trim();
           } else if (lowerLine.includes('category:') || lowerLine.includes('type:')) {
             currentTool.category = line.split(':').slice(1).join(':').trim().toLowerCase();
           } else if (lowerLine.includes('pricing:') || lowerLine.includes('price:') || lowerLine.includes('cost:')) {
@@ -106,11 +107,12 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
           id: `ai-tool-${tools.length + 1}`,
           name: currentTool.name,
           description: currentTool.description || "No description available",
-          websiteUrl: currentTool.websiteUrl || "#",
+          url: currentTool.url || "#",
           logoUrl: "/placeholder.svg", // Use placeholder for AI-generated entries
           category: currentTool.category || "general",
           pricing: currentTool.pricing || "Unknown",
           dateAdded: new Date().toISOString(),
+          updated: new Date().toISOString(),
           company: currentTool.company || "AI Recommended",
           trending: true
         } as AITool);
@@ -120,6 +122,51 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
     } catch (error) {
       console.error("Error parsing tools from AI response:", error);
       return [];
+    }
+  };
+  
+  const enhancePromptForSpecificTool = (userPrompt: string): string => {
+    // Check if the prompt seems to be asking about a specific tool
+    const specificToolRegex = /(?:about|what is|details on|info on|tell me about)\s+([a-zA-Z0-9\s]+)(?:\?|\.|\s|$)/i;
+    const match = userPrompt.match(specificToolRegex);
+    
+    if (match && match[1]) {
+      const toolName = match[1].trim();
+      return `Please provide comprehensive details about the AI tool called "${toolName}". 
+Include the following information in a structured format:
+1. Name: Full name of the tool
+2. Description: A detailed description of what the tool does
+3. Website URL: The official website link
+4. Category: What type of AI tool is it (e.g. text generation, image generation, coding)
+5. Pricing: Free, freemium, paid, or subscription details
+6. Company: Which company developed this tool
+7. Key features: What makes this tool stand out
+8. Use cases: Common applications of this tool
+
+Format your answer in a clean, structured way with clear headings for each section.`;
+    } else if (userPrompt.toLowerCase().includes("trending") || 
+               userPrompt.toLowerCase().includes("popular") ||
+               userPrompt.toLowerCase().includes("top") ||
+               userPrompt.toLowerCase().includes("best")) {
+      return `List the top trending AI tools right now. For each tool, include:
+1. Name: Full name of the tool
+2. Description: Brief explanation of what it does
+3. Website URL: The official website
+4. Category: Type of AI tool
+5. Pricing: Free, freemium, paid, or subscription details
+6. Company: The creator company
+
+Format your answer as a numbered list with a clear separation between tools.`;
+    } else {
+      return `I'm looking for AI tools about: ${userPrompt}. Please provide details about the best tools in this category including:
+1. Name: Full name of each tool
+2. Description: What the tool does and its main benefits
+3. Website URL: The official website for each tool
+4. Category: More specific type within the requested category
+5. Pricing: Free, freemium, paid, or subscription details
+6. Company: Which company created each tool
+
+Format your answer as a numbered list with clear sections for each tool.`;
     }
   };
   
@@ -133,10 +180,8 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
     setParsedTools([]);
     
     try {
-      // Try to structure the prompt to get better results for AI tools
-      const enhancedPrompt = prompt.toLowerCase().includes("trending") || prompt.toLowerCase().includes("popular") ? 
-        `List the top trending AI tools right now. For each tool, include: name, description, website URL (if available), category, pricing (if available), and the company that created it. Format as a numbered list.` :
-        `I'm looking for AI tools about: ${prompt}. Please provide details about the best tools in this category including their names, descriptions, websites, categories, and pricing if available. Format your answer as a numbered list.`;
+      // Enhance the prompt based on what the user is asking
+      const enhancedPrompt = enhancePromptForSpecificTool(prompt);
       
       const aiResponse = await window.puter.ai.chat(enhancedPrompt);
       
