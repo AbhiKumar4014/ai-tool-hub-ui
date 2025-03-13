@@ -203,6 +203,55 @@ const ToolDetails = () => {
                 </div>
               </div>
             </Card>
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-3">Pros</h3>
+              <ul className="space-y-2">
+                {tool?.pros?.map((pro, index) => (
+                  <li key={index} className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary mt-1"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {pro}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-3">Cons</h3>
+              <ul className="space-y-2">
+                {tool?.cons?.map((con, index) => (
+                  <li key={index} className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary mt-1"
+                    >
+                      <line x1="18" x2="6" y1="6" y2="18"></line>
+                      <line x1="6" x2="18" y1="6" y2="18"></line>
+                    </svg>
+                    {con}
+                  </li>
+                ))}
+              </ul>
+            </Card>
           </div>
         </div>
 

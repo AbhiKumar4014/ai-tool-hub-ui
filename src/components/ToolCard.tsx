@@ -2,6 +2,7 @@ import { AITool } from "@/services/aiToolsService";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface ToolCardProps {
   tool: AITool;
@@ -12,20 +13,28 @@ interface ToolCardProps {
 export default function ToolCard({ tool, featured = false, onClick }: ToolCardProps) {
   const dateAdded = new Date(tool?.created);
   const isNew = new Date().getTime() - dateAdded.getTime() < 7 * 24 * 60 * 60 * 1000;
+  const [logoError, setLogoError] = useState(false);
+
+  const handleLogoError = () => {
+    setLogoError(true);
+  };
+
+  const defaultLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-pOG4PCyPQABsEWMOfeWV_FhFi6hFW8f0fw&s";
 
   return (
     <div onClick={() => onClick(tool)}>
-      <Card 
+      <Card
         className={cn(
           "overflow-hidden card-hover h-full",
           featured && "border-primary/50"
         )}
       >
         <div className="aspect-[4/3] relative overflow-hidden bg-secondary">
-          <img 
-            src={tool.logoUrl} 
-            alt={tool.name} 
+          <img
+            src={logoError ? defaultLogo : tool.logoUrl}
+            alt={tool.name}
             className="object-cover w-full h-full"
+            onError={handleLogoError}
           />
           {featured && (
             <div className="absolute top-2 right-2">

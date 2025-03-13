@@ -74,6 +74,8 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
             featured?: boolean;             // (Optional) Indicates if the tool is featured.
             tags?: string[];                // (Optional) A list of tags relevant to the tool.
             features: string[];             // A List of key features about the tool
+            pros: string[];                 // A List of pros about the tool
+            cons: string[];                // A List of cons about the tool
             created: string;
             updated: string;
           }
@@ -93,6 +95,7 @@ const AIChatBox = ({ onToolsReceived }: AIChatBoxProps) => {
 - Key features and standout functionalities.
 - Additional information such as pricing, company, origin, and tags when available.
 - The current trend status, and whether the tool is featured.
+- List the pros and cons of each tool.
 
 ${basePrompt}`;
     }
@@ -103,12 +106,15 @@ ${basePrompt}`;
     if (match && match[1]) {
       const toolName = match[1].trim();
       return `Please provide comprehensive details about the AI tool called "${toolName}". 
+- List the pros and cons of the tool.
 ${basePrompt}`;
     } else if (userPrompt.toLowerCase().includes("list")) {
       return `List the AI tools ${userPrompt}. For each tool, include:
+- List the pros and cons of each tool.
 ${basePrompt}`;
     } else {
       return `I'm looking for AI tools about: ${userPrompt}. Please provide details about the best tools in this category including:
+- List the pros and cons of each tool.
 ${basePrompt}`;
     }
   };
