@@ -1,20 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import ToolCard from "@/components/ToolCard";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { AITool } from "@/services/aiToolsService";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { origins, countries } from "@/config/site";
 
 const TrendingPage = () => {
   const [tools, setTools] = useState<AITool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [countryFilter, setCountryFilter] = useState("");
+  const [originFilter, setOriginFilter] = useState("");
   const navigate = useNavigate();
 
   const fetchTrendingToolsFromAI = async () => {
     setIsLoading(true);
     try {
-      const prompt = `Research and list the top 20 trending AI tools currently available. Please ensure your response spans a diverse range of categories such as coding assistants, design tools, automation, productivity, and data analytics. For each tool, gather and include comprehensive details including:
+      let prompt = `Research and list the top 20 trending AI tools currently available`;
+      if (countryFilter) {
+        prompt += ` from ${countryFilter}`;
+      }
+      prompt += `. Please ensure your response spans a diverse range of categories such as coding assistants, design tools, automation, productivity, and data analytics. For each tool, gather and include comprehensive details including:
 - Primary use case and target audience.
 - Key features and standout functionalities.
 - Additional information such as pricing, company, origin, and tags when available.
@@ -84,6 +93,16 @@ Ensure that:
     fetchTrendingToolsFromAI();
   };
 
+  const filteredTools = tools.filter(tool => {
+    if (countryFilter && tool.origin !== countryFilter) {
+      return false;
+    }
+    if (originFilter && tool.company !== originFilter) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <div className="container py-8 px-4 md:px-6">
       <div className="flex justify-between items-center mb-6">
@@ -97,6 +116,45 @@ Ensure that:
           <RefreshCw className="mr-2 h-4 w-4" />
           Reload
         </Button>
+      </div>
+
+      <div className="flex gap-4 mb-4">
+        <Select onValueChange={setCountryFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by Country" />
+          </SelectTrigger>
+          <SelectContent>
+            {countries.map((country) => (
+              <SelectItem key={country} value={country}>{country}</SelectItem>
+            ))}
+            <SelectItem key="other" value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
+        {countryFilter === "other" && (
+          <Input
+            type="text"
+            placeholder="Enter Country"
+            onChange={(e) => setCountryFilter(e.target.value)}
+          />
+        )}
+        <Select onValueChange={setOriginFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by Origin" />
+          </SelectTrigger>
+          <SelectContent>
+            {origins.map((origin) => (
+              <SelectItem key={origin} value={origin}>{origin}</SelectItem>
+            ))}
+            <SelectItem key="other" value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
+        {originFilter === "other" && (
+          <Input
+            type="text"
+            placeholder="Enter Company Origin"
+            onChange={(e) => setOriginFilter(e.target.value)}
+          />
+        )}
       </div>
 
       <div className="mb-8">
@@ -122,7 +180,7 @@ Ensure that:
                   </div>
                 </div>
               ))
-          : tools?.map((tool) => (
+          : filteredTools?.map((tool) => (
               <ToolCard key={tool.id} tool={tool} onClick={(t) => handleToolClick(t, tools)} />
             ))}
       </div>

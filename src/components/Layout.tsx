@@ -164,9 +164,9 @@ export default function Layout({ children }: LayoutProps) {
                   </svg>
                   <span>{category.name}</span>
                 </div>
-                <span className="text-xs text-muted-foreground rounded-full bg-secondary px-2 py-0.5">
+                {/* <span className="text-xs text-muted-foreground rounded-full bg-secondary px-2 py-0.5">
                   {category.count}
-                </span>
+                </span> */}
               </Link>
             ))}
           </div>

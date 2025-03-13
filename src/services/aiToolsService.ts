@@ -86,8 +86,226 @@ const mockCategories: Category[] = [
     icon: "database",
     description: "Generate SQL queries using natural language",
     count: 6
+  },
+  {
+    id: "automation",
+    name: "Workflow Automation",
+    icon: "settings",
+    description: "Automate repetitive tasks and workflows",
+    count: 9
+  },
+  {
+    id: "security",
+    name: "Cybersecurity",
+    icon: "shield",
+    description: "AI-powered security and threat detection",
+    count: 5
+  },
+  {
+    id: "translation",
+    name: "Language Translation",
+    icon: "globe",
+    description: "Translate text and speech between languages",
+    count: 11
+  },
+  {
+    id: "writing",
+    name: "Creative Writing",
+    icon: "edit",
+    description: "Tools for storytelling, blogging, and writing assistance",
+    count: 13
+  },
+  {
+    id: "marketing",
+    name: "Marketing & SEO",
+    icon: "trending-up",
+    description: "Optimize content for SEO and marketing",
+    count: 7
+  },
+  {
+    id: "finance",
+    name: "Finance & Trading",
+    icon: "dollar-sign",
+    description: "AI tools for financial analysis and trading insights",
+    count: 4
+  },
+  {
+    id: "gaming",
+    name: "Game Development",
+    icon: "gamepad",
+    description: "AI-assisted tools for game design and development",
+    count: 6
+  },
+  {
+    id: "legal",
+    name: "Legal Assistance",
+    icon: "briefcase",
+    description: "AI tools for legal research and document analysis",
+    count: 5
+  },
+  {
+    id: "health",
+    name: "Healthcare & Medical",
+    icon: "heart",
+    description: "AI applications in health, diagnosis, and wellness",
+    count: 8
+  },
+  {
+    id: "education",
+    name: "Education & Learning",
+    icon: "book",
+    description: "AI-powered learning assistants and tutors",
+    count: 10
+  },
+  {
+    id: "productivity",
+    name: "Productivity",
+    icon: "check-circle",
+    description: "AI tools to improve productivity and task management",
+    count: 9
+  },
+  {
+    id: "customer-support",
+    name: "Customer Support",
+    icon: "headphones",
+    description: "AI-driven customer support automation",
+    count: 7
+  },
+  {
+    id: "social-media",
+    name: "Social Media Tools",
+    icon: "share-2",
+    description: "AI-driven social media content creation and scheduling",
+    count: 10
+  },
+  {
+    id: "fashion",
+    name: "Fashion & Style",
+    icon: "scissors",
+    description: "AI tools for fashion design and trend analysis",
+    count: 5
+  },
+  {
+    id: "real-estate",
+    name: "Real Estate",
+    icon: "home",
+    description: "AI solutions for property valuation and virtual tours",
+    count: 4
+  },
+  {
+    id: "weather",
+    name: "Weather Forecasting",
+    icon: "cloud",
+    description: "AI-powered weather predictions and analysis",
+    count: 3
+  },
+  {
+    id: "agriculture",
+    name: "Agriculture & Farming",
+    icon: "leaf",
+    description: "AI for precision farming and crop monitoring",
+    count: 6
+  },
+  {
+    id: "travel",
+    name: "Travel & Tourism",
+    icon: "airplane",
+    description: "AI-powered trip planning and recommendation engines",
+    count: 5
+  },
+  {
+    id: "sports",
+    name: "Sports Analytics",
+    icon: "activity",
+    description: "AI tools for performance tracking and game strategy",
+    count: 7
+  },
+  {
+    id: "biology",
+    name: "Biotechnology",
+    icon: "dna",
+    description: "AI applications in genetics and medical research",
+    count: 3
+  },
+  {
+    id: "energy",
+    name: "Energy & Sustainability",
+    icon: "zap",
+    description: "AI solutions for energy management and conservation",
+    count: 4
+  },
+  {
+    id: "entertainment",
+    name: "Entertainment",
+    icon: "film",
+    description: "AI for music, movies, and content creation",
+    count: 8
+  },
+  {
+    id: "hr",
+    name: "HR & Recruitment",
+    icon: "users",
+    description: "AI-driven hiring and talent management solutions",
+    count: 6
+  },
+  {
+    id: "psychology",
+    name: "Mental Health & Wellness",
+    icon: "smile",
+    description: "AI applications in therapy and self-care",
+    count: 4
+  },
+  {
+    id: "blockchain",
+    name: "Blockchain & Crypto",
+    icon: "layers",
+    description: "AI in cryptocurrency analysis and blockchain solutions",
+    count: 5
+  },
+  {
+    id: "supply-chain",
+    name: "Supply Chain & Logistics",
+    icon: "truck",
+    description: "AI for optimizing logistics and inventory management",
+    count: 6
+  },
+  {
+    id: "space",
+    name: "Space & Astronomy",
+    icon: "moon",
+    description: "AI applications in space exploration and astrophysics",
+    count: 3
+  },
+  {
+    id: "food",
+    name: "Food & Nutrition",
+    icon: "coffee",
+    description: "AI for diet planning and recipe generation",
+    count: 7
+  },
+  {
+    id: "architecture",
+    name: "Architecture & Design",
+    icon: "compass",
+    description: "AI-assisted building design and planning",
+    count: 4
+  },
+  {
+    id: "hardware",
+    name: "Hardware Development",
+    icon: "cpu",
+    description: "AI applications in circuit design and manufacturing",
+    count: 3
+  },
+  {
+    id: "automation-testing",
+    name: "Automated Testing",
+    icon: "bug",
+    description: "AI tools for automated software testing",
+    count: 8
   }
 ];
+
 
 // Sample company origins
 const origins = [
