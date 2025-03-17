@@ -200,12 +200,12 @@ ${basePrompt}`;
 
         {(response || parsedTools.length > 0) && !isLoading && (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-            <TabsList className="grid w-full grid-cols-2">
+            {/* <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="text">Text Response</TabsTrigger>
               <TabsTrigger value="cards" disabled={parsedTools.length === 0}>
                 Tool Cards
               </TabsTrigger>
-            </TabsList>
+            </TabsList> */}
             <TabsContent value="text">
               <div className="whitespace-pre-line">
                 <div className="prose dark:prose-invert">{response}</div>

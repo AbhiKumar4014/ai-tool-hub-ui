@@ -5,7 +5,7 @@ export const origins = [
 ];
 
 export const countries = [
-  "USA", "Canada", "UK", "Germany", "France", "China", "India", "Japan", "South Korea", "Australia", "Other"
+  "USA", "Canada", "UK", "Germany", "France", "China", "India", "Japan", "South Korea", "Australia",
 ];
 
 export const categoryIcons = {
