@@ -15,13 +15,6 @@ const SearchPage = () => {
       </Button>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-display font-bold gradient-text mb-2">
-          Ask the AI Assistant
-        </h1>
-        <p className="text-lg text-muted-foreground mb-6">
-          Ask about any AI tools or categories you're interested in.
-        </p>
-
         <AIChatBox />
       </div>
     </div>

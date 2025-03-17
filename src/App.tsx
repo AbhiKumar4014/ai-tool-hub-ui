@@ -14,6 +14,7 @@ import SearchPage from "./pages/SearchPage";
 import OriginPage from "./pages/OriginPage";
 import NotFound from "./pages/NotFound";
 import AIChatBox from './components/AIChatBox';
+import AINewsPage from "./pages/AINewsPage";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/new" element={<NewToolsPage />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/origin/:id" element={<OriginPage />} />
+              <Route path="/news" element={<AINewsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

@@ -8,9 +8,9 @@ import { ArrowLeft, RefreshCw } from "lucide-react";
 import { AITool } from "@/services/aiToolsService";
 import { categoryToolsPrompt } from "@/config/prompts";
 import { useQuery } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { origins, countries } from "@/config/site";
+import { origins, countries, categoryIcons } from "@/config/site";
+import ToolFilters from "@/components/ToolFilters";
+import CategoryIcon from "@/components/CategoryIcon";
 
 const CategoryPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -36,12 +36,7 @@ const CategoryPage = () => {
     try {
       if (!category) return;
 
-      let prompt = `Research and list the 20 AI tools in the ${category.name} category`;
-      if (countryFilter) {
-        prompt += ` from ${countryFilter}`;
-      }
-      prompt += `. Please ensure your response should be the category based ai tools only. For each tool, gather and include comprehensive details including:
-- Primary use case and target audience.`;
+      const prompt = categoryToolsPrompt(category.name, countryFilter);
 
       const aiResponse = await window.puter.ai.chat(prompt);
       const responseText =
@@ -83,11 +78,15 @@ const CategoryPage = () => {
     fetchCategoryToolsFromAI();
   };
 
+  const handleFilterChange = () => {
+    fetchCategoryToolsFromAI();
+  };
+
   const filteredTools = tools.filter(tool => {
-    if (countryFilter && tool.origin !== countryFilter) {
+    if (countryFilter && countryFilter !== "all" && tool.origin !== countryFilter) {
       return false;
     }
-    if (originFilter && tool.company !== originFilter) {
+    if (originFilter && originFilter !== "all" && tool.company !== originFilter) {
       return false;
     }
     return true;
@@ -108,50 +107,22 @@ const CategoryPage = () => {
         </Button>
       </div>
 
-      <div className="flex gap-4 mb-4">
-        <Select onValueChange={setCountryFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by Country" />
-          </SelectTrigger>
-          <SelectContent>
-            {countries.map((country) => (
-              <SelectItem key={country} value={country}>{country}</SelectItem>
-            ))}
-            <SelectItem key="other" value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-        {countryFilter === "other" && (
-          <Input
-            type="text"
-            placeholder="Enter Country"
-            onChange={(e) => setCountryFilter(e.target.value)}
-          />
-        )}
-        <Select onValueChange={setOriginFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by Origin" />
-          </SelectTrigger>
-          <SelectContent>
-            {origins.map((origin) => (
-              <SelectItem key={origin} value={origin}>{origin}</SelectItem>
-            ))}
-            <SelectItem key="other" value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-        {originFilter === "other" && (
-          <Input
-            type="text"
-            placeholder="Enter Company Origin"
-            onChange={(e) => setOriginFilter(e.target.value)}
-          />
-        )}
-      </div>
+      <ToolFilters
+        countryFilter={countryFilter}
+        setCountryFilter={setCountryFilter}
+        originFilter={originFilter}
+        setOriginFilter={setOriginFilter}
+        onFilterChange={handleFilterChange}
+      />
 
       {category ? (
         <div className="mb-8">
           <h1 className="text-3xl font-display font-bold gradient-text mb-2">
             {category.name} Tools
           </h1>
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <CategoryIcon name={category.name} />
+          </div>
           <p className="text-lg text-muted-foreground mb-6">
             {category.description}
           </p>

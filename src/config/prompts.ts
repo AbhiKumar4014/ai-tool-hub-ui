@@ -33,7 +33,13 @@ export const featuredToolsPrompt = `Research and list the top 6 featured AI tool
   2. The "description" field succinctly summarizes the tool's capabilities, primary use case, and its target market.
   3. The final output is strictly well-formatted, valid JSON with no extra commentary or markdown formatting.`;
 
-export const trendingToolsPrompt = `Research and list the top 20 trending AI tools currently available. Please ensure your response spans a diverse range of categories such as coding assistants, design tools, automation, productivity, and data analytics. For each tool, gather and include comprehensive details including:
+export const trendingToolsPrompt = (countryFilter: string) => {
+  let prompt = `Research and list the top 20 trending AI tools currently available`;
+  if (countryFilter) {
+    prompt = `Research and list the top trending AI tools currently available`;
+    prompt += ` from ${countryFilter}`;
+  }
+  prompt += `. Please ensure your response spans a diverse range of categories such as coding assistants, design tools, automation, productivity, and data analytics. For each tool, gather and include comprehensive details including:
   - Primary use case and target audience.
   - Key features and standout functionalities.
   - Additional information such as pricing, company, origin, and tags when available.
@@ -67,8 +73,15 @@ export const trendingToolsPrompt = `Research and list the top 20 trending AI too
   1. Each tool's object includes all the fields listed above. If certain details are not available, provide an appropriate null or empty value.
   2. The "description" field succinctly summarizes the tool's capabilities, primary use case, and its target market.
   3. The final output is strictly well-formatted, valid JSON with no extra commentary or markdown formatting.`;
+  return prompt;
+}
 
-export const newToolsPrompt = `Research and list the newly added 20 AI tools in the past week. Please ensure your response spans a diverse range of categories such as coding assistants, design tools, automation, productivity, and data analytics. For each tool, gather and include comprehensive details including:
+export const newToolsPrompt = (countryFilter: string) => {
+  let prompt = `Research and list the newly added 20 AI tools in the past week`;
+  if (countryFilter) {
+    prompt += ` from ${countryFilter}`;
+  }
+  prompt += `. Please ensure your response spans a diverse range of categories such as coding assistants, design tools, automation, productivity, and data analytics. For each tool, gather and include comprehensive details including:
   - Primary use case and target audience.
   - Key features and standout functionalities.
   - Additional information such as pricing, company, origin, and tags when available.
@@ -102,8 +115,15 @@ export const newToolsPrompt = `Research and list the newly added 20 AI tools in 
   1. Each tool's object includes all the fields listed above. If certain details are not available, provide an appropriate null or empty value.
   2. The "description" field succinctly summarizes the tool's capabilities, primary use case, and its target market.
   3. The final output is strictly well-formatted, valid JSON with no extra commentary or markdown formatting.`;
+  return prompt;
+}
 
-export const categoryToolsPrompt = (category: string) => `Research and list the trending 20 AI tools in the ${category} category. Please ensure your response should be the category based ai tools only. For each tool, gather and include comprehensive details including:
+export const categoryToolsPrompt = (category: string, countryFilter: string) => {
+  let prompt = `Research and list the trending 20 AI tools in the ${category} category`;
+  if (countryFilter) {
+    prompt += ` from ${countryFilter}`;
+  }
+  prompt += `. Please ensure your response should be the category based ai tools only. For each tool, gather and include comprehensive details including:
   - Primary use case and target audience.
   - Key features and standout functionalities.
   - Additional information such as pricing, company, origin, and tags when available.
@@ -137,3 +157,5 @@ export const categoryToolsPrompt = (category: string) => `Research and list the 
   1. Each tool's object includes all the fields listed above. If certain details are not available, provide an appropriate null or empty value.
   2. The "description" field succinctly summarizes the tool's capabilities, primary use case, and its target market.
   3. The final output is strictly well-formatted, valid JSON with no extra commentary or markdown formatting.`;
+  return prompt;
+}

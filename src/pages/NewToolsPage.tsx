@@ -6,9 +6,7 @@ import ToolCard from "@/components/ToolCard";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { AITool } from "@/services/aiToolsService";
 import { newToolsPrompt } from "@/config/prompts";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { origins, countries } from "@/config/site";
+import ToolFilters from "@/components/ToolFilters";
 
 const NewToolsPage = () => {
   const [tools, setTools] = useState<AITool[]>([]);
@@ -20,7 +18,7 @@ const NewToolsPage = () => {
   const fetchNewToolsFromAI = async () => {
     setIsLoading(true);
     try {
-      let prompt = newToolsPrompt;
+      let prompt = newToolsPrompt(countryFilter);
       if (countryFilter) {
         prompt += ` from ${countryFilter}`;
       }
@@ -64,11 +62,15 @@ const NewToolsPage = () => {
     fetchNewToolsFromAI();
   };
 
+  const handleFilterChange = () => {
+    fetchNewToolsFromAI();
+  };
+
   const filteredTools = tools.filter(tool => {
-    if (countryFilter && tool.origin !== countryFilter) {
+    if (countryFilter && countryFilter !== "all" && tool.origin !== countryFilter) {
       return false;
     }
-    if (originFilter && tool.company !== originFilter) {
+    if (originFilter && originFilter !== "all" && tool.company !== originFilter) {
       return false;
     }
     return true;
@@ -89,44 +91,13 @@ const NewToolsPage = () => {
         </Button>
       </div>
 
-      <div className="flex gap-4 mb-4">
-        <Select onValueChange={setCountryFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by Country" />
-          </SelectTrigger>
-          <SelectContent>
-            {countries.map((country) => (
-              <SelectItem key={country} value={country}>{country}</SelectItem>
-            ))}
-            <SelectItem key="other" value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-        {countryFilter === "other" && (
-          <Input
-            type="text"
-            placeholder="Enter Country"
-            onChange={(e) => setCountryFilter(e.target.value)}
-          />
-        )}
-        <Select onValueChange={setOriginFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by Origin" />
-          </SelectTrigger>
-          <SelectContent>
-            {origins.map((origin) => (
-              <SelectItem key={origin} value={origin}>{origin}</SelectItem>
-            ))}
-            <SelectItem key="other" value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-        {originFilter === "other" && (
-          <Input
-            type="text"
-            placeholder="Enter Company Origin"
-            onChange={(e) => setOriginFilter(e.target.value)}
-          />
-        )}
-      </div>
+      <ToolFilters
+        countryFilter={countryFilter}
+        setCountryFilter={setCountryFilter}
+        originFilter={originFilter}
+        setOriginFilter={setOriginFilter}
+        onFilterChange={handleFilterChange}
+      />
 
       <div className="mb-8">
         <h1 className="text-3xl font-display font-bold gradient-text mb-2">

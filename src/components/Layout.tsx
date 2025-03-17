@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -10,10 +9,13 @@ import { useTheme } from "./ThemeProvider";
 import { Category, fetchCategories } from "@/services/aiToolsService";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
+import * as LucideIcons from "lucide-react";
+import CategoryIcon from "@/components/CategoryIcon";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
+
 
 export default function Layout({ children }: LayoutProps) {
   const isMobile = useIsMobile();
@@ -90,6 +92,21 @@ export default function Layout({ children }: LayoutProps) {
             </svg>
             <span>Newly Added</span>
           </Link>
+          <Link 
+            to="/news" 
+            className={cn(
+              "flex items-center gap-2 rounded-md px-2 py-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+              location.pathname === "/news" && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+            )}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-newspaper">
+              <path d="M4 3a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v17a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3z"></path>
+              <path d="M9 3v6h6V3"></path>
+              <line x1="3" x2="21" y1="15" y2="15"></line>
+              <line x1="3" x2="21" y1="19" y2="19"></line>
+            </svg>
+            <span>AI News</span>
+          </Link>
         </div>
         {categories.length > 0 && (
           <div className="mt-6 space-y-1">
@@ -106,62 +123,7 @@ export default function Layout({ children }: LayoutProps) {
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`lucide lucide-${category.icon}`}>
-                    {category.icon === "code" && (
-                      <>
-                        <polyline points="16 18 22 12 16 6"></polyline>
-                        <polyline points="8 6 2 12 8 18"></polyline>
-                      </>
-                    )}
-                    {category.icon === "image" && (
-                      <>
-                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
-                        <circle cx="9" cy="9" r="2"></circle>
-                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
-                      </>
-                    )}
-                    {category.icon === "file-text" && (
-                      <>
-                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" x2="8" y1="13" y2="13"></line>
-                        <line x1="16" x2="8" y1="17" y2="17"></line>
-                        <line x1="10" x2="8" y1="9" y2="9"></line>
-                      </>
-                    )}
-                    {category.icon === "bar-chart" && (
-                      <>
-                        <line x1="12" x2="12" y1="20" y2="10"></line>
-                        <line x1="18" x2="18" y1="20" y2="4"></line>
-                        <line x1="6" x2="6" y1="20" y2="16"></line>
-                      </>
-                    )}
-                    {category.icon === "music" && (
-                      <>
-                        <path d="M9 18V5l12-2v13"></path>
-                        <circle cx="6" cy="18" r="3"></circle>
-                        <circle cx="18" cy="16" r="3"></circle>
-                      </>
-                    )}
-                    {category.icon === "message-square" && (
-                      <>
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                      </>
-                    )}
-                    {category.icon === "video" && (
-                      <>
-                        <path d="m22 8-6 4 6 4V8Z"></path>
-                        <rect width="14" height="12" x="2" y="6" rx="2" ry="2"></rect>
-                      </>
-                    )}
-                    {category.icon === "database" && (
-                      <>
-                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                      </>
-                    )}
-                  </svg>
+                  <CategoryIcon name={category.name} />
                   <span>{category.name}</span>
                 </div>
                 {/* <span className="text-xs text-muted-foreground rounded-full bg-secondary px-2 py-0.5">

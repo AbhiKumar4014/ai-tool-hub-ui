@@ -95,7 +95,12 @@ const ToolDetails = () => {
                   })}
                 {tool.origin && (
                   <Badge variant="outline">
-                    <Link to={`/origin/${tool.origin}`}>{tool.origin}</Link>
+                    {tool.origin}
+                  </Badge>
+                )}
+                {tool.company && (
+                  <Badge variant="outline">
+                    {tool?.company}
                   </Badge>
                 )}
                 {tool.trending && (
