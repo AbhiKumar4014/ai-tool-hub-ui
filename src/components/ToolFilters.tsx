@@ -51,7 +51,7 @@ const ToolFilters = ({
         onFilterChange();
       }}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Filter by Company" />
+          <SelectValue placeholder="Filter by Origin" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem key="allOrigins" value="all">All Companies</SelectItem>

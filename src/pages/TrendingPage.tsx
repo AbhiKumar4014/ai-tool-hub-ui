@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { origins, countries } from "@/config/site";
 import ToolFilters from "@/components/ToolFilters";
 import { trendingToolsPrompt } from "@/config/prompts";
+import CategoryIcon from "@/components/CategoryIcon";
 
 const TrendingPage = () => {
   const [tools, setTools] = useState<AITool[]>([]);
@@ -125,7 +126,7 @@ const TrendingPage = () => {
             ))}
       </div>
 
-      {tools && tools.length === 0 && (
+      {!isLoading && filteredTools.length === 0 && (
         <div className="text-center py-12">
           <h3 className="text-xl font-medium mb-2">No trending tools found</h3>
           <p className="text-muted-foreground mb-6">

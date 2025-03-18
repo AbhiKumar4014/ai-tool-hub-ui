@@ -15,6 +15,7 @@ import OriginPage from "./pages/OriginPage";
 import NotFound from "./pages/NotFound";
 import AIChatBox from './components/AIChatBox';
 import AINewsPage from "./pages/AINewsPage";
+import {Chatbot} from "./components/ChatBot";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/news" element={<AINewsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+          <Chatbot />
           </Layout>
         </BrowserRouter>
       </TooltipProvider>

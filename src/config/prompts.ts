@@ -77,7 +77,7 @@ export const trendingToolsPrompt = (countryFilter: string) => {
 }
 
 export const newToolsPrompt = (countryFilter: string) => {
-  let prompt = `Research and list the newly added 20 AI tools in the past week`;
+  let prompt = `Research and list the newly added AI tools in the past week`;
   if (countryFilter) {
     prompt += ` from ${countryFilter}`;
   }
@@ -119,7 +119,7 @@ export const newToolsPrompt = (countryFilter: string) => {
 }
 
 export const categoryToolsPrompt = (category: string, countryFilter: string) => {
-  let prompt = `Research and list the trending 20 AI tools in the ${category} category`;
+  let prompt = `Research and list ${category} AI tools`;
   if (countryFilter) {
     prompt += ` from ${countryFilter}`;
   }

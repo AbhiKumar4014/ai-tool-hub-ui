@@ -31,26 +31,9 @@ export default function Layout({ children }: LayoutProps) {
   const renderSidebarContent = () => (
     <>
       <div className="px-3 py-2">
-        <Link to="/" className="flex items-center px-2 py-1.5">
+        <Link to="/" className="flex items-center px-2 pt-1.5 pb-0">
           <span className="font-display text-xl font-bold gradient-text">AIToolsHub</span>
         </Link>
-        <div className="relative mt-4">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Link to="/search">
-            <input
-              type="text"
-              placeholder="Search AI tools..."
-              className="w-full rounded-md border border-border bg-background py-2 pl-8 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              onClick={(e) => {
-                e.preventDefault();
-                if (isMobile) {
-                  setIsSearchOpen(false);
-                }
-                window.location.href = "/search";
-              }}
-            />
-          </Link>
-        </div>
       </div>
       <div className="px-3 mt-4 flex-1 overflow-auto">
         <div className="space-y-1">
